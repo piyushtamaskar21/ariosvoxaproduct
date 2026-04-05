@@ -1,32 +1,32 @@
 'use client';
 
 import { useRef, useMemo } from 'react';
-import { useFrame, type ThreeElements } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 const GLOBE_RADIUS = 2.5;
 
 const CITIES = [
-  { lat: 40.7, lng: -74 },   // New York
-  { lat: 51.5, lng: -0.1 },  // London
-  { lat: 25.2, lng: 55.3 },  // Dubai
-  { lat: 19.1, lng: 72.9 },  // Mumbai
-  { lat: 1.3, lng: 103.8 },  // Singapore
-  { lat: 35.7, lng: 139.7 }, // Tokyo
-  { lat: -23.5, lng: -46.6 },// São Paulo
-  { lat: 52.4, lng: 4.9 },   // Amsterdam
-  { lat: -33.9, lng: 151.2 },// Sydney
+  { lat: 40.7, lng: -74 },
+  { lat: 51.5, lng: -0.1 },
+  { lat: 25.2, lng: 55.3 },
+  { lat: 19.1, lng: 72.9 },
+  { lat: 1.3, lng: 103.8 },
+  { lat: 35.7, lng: 139.7 },
+  { lat: -23.5, lng: -46.6 },
+  { lat: 52.4, lng: 4.9 },
+  { lat: -33.9, lng: 151.2 },
 ];
 
 const CONNECTIONS: [number, number][] = [
-  [0, 1], // New York ↔ London
-  [1, 2], // London ↔ Dubai
-  [2, 3], // Dubai ↔ Mumbai
-  [3, 4], // Mumbai ↔ Singapore
-  [4, 5], // Singapore ↔ Tokyo
-  [5, 6], // Tokyo ↔ São Paulo
-  [6, 0], // São Paulo ↔ New York
-  [7, 8], // Amsterdam ↔ Sydney
+  [0, 1],
+  [1, 2],
+  [2, 3],
+  [3, 4],
+  [4, 5],
+  [5, 6],
+  [6, 0],
+  [7, 8],
 ];
 
 function latLngToVec3(lat: number, lng: number, r: number): THREE.Vector3 {
@@ -43,16 +43,14 @@ function createArcPoints(start: THREE.Vector3, end: THREE.Vector3, height: numbe
   const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
   const dist = start.distanceTo(end);
   mid.normalize().multiplyScalar(GLOBE_RADIUS + height * dist);
-
   const points: THREE.Vector3[] = [];
   for (let i = 0; i <= segments; i++) {
     const t = i / segments;
-    const p = new THREE.Vector3(
+    points.push(new THREE.Vector3(
       (1 - t) * (1 - t) * start.x + 2 * (1 - t) * t * mid.x + t * t * end.x,
       (1 - t) * (1 - t) * start.y + 2 * (1 - t) * t * mid.y + t * t * end.y,
       (1 - t) * (1 - t) * start.z + 2 * (1 - t) * t * mid.z + t * t * end.z
-    );
-    points.push(p);
+    ));
   }
   return points;
 }
@@ -75,7 +73,6 @@ const globeFragShader = `
   varying vec3 vNormal;
   varying vec3 vPosition;
 
-  // Simplex noise
   vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
   vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
   vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
@@ -130,25 +127,19 @@ const globeFragShader = `
     vec3 landColor = vec3(0.06, 0.15, 0.5);
     vec3 oceanColor = vec3(0.03, 0.08, 0.35);
     vec3 surfaceColor = mix(oceanColor, landColor, continent * 0.6);
-
     float breathe = sin(uTime * 0.6) * 0.5 + 0.5;
     surfaceColor += vec3(0.1, 0.12, 0.4) * breathe * 0.2;
-
     vec3 viewDir = normalize(cameraPosition - vPosition);
     float fresnel = 1.0 - max(dot(viewDir, vNormal), 0.0);
     fresnel = pow(fresnel, 2.5);
-
     vec3 rimColor = vec3(0.3, 0.5, 1.0);
     rimColor = mix(rimColor, vec3(0.13, 0.83, 0.93), fresnel * 0.6);
-
     vec3 finalColor = surfaceColor + rimColor * fresnel * 1.5;
     float alpha = mix(0.85, 1.0, fresnel) * uOpacity;
-
     gl_FragColor = vec4(finalColor, alpha);
   }
 `;
 
-// ─── Atmosphere Glow Shader ───
 const atmosVertShader = `
   varying vec3 vNormal;
   varying vec3 vViewPosition;
@@ -171,15 +162,12 @@ const atmosFragShader = `
     vec3 viewDir = normalize(cameraPosition - vWorldPosition);
     float fresnel = 1.0 - max(dot(viewDir, vNormal), 0.0);
     fresnel = pow(fresnel, 3.5);
-
     float breathe = sin(uTime * 0.6) * 0.5 + 0.5;
     vec3 innerColor = mix(vec3(0.38, 0.40, 0.95), vec3(0.13, 0.83, 0.93), breathe * 0.4);
-
     gl_FragColor = vec4(innerColor, fresnel * 0.6);
   }
 `;
 
-// ─── Connection Arc Shader ───
 const arcVertShader = `
   varying vec2 vUv;
   varying float vDist;
@@ -199,10 +187,8 @@ const arcFragShader = `
   void main() {
     float t = mod(uTime * 0.4 + uDelay, 1.0);
     float packet = smoothstep(t - 0.08, t, vUv.x) * smoothstep(t + 0.12, t + 0.04, vUv.x);
-
     vec3 color = mix(uColorStart, uColorEnd, vUv.x);
     float alpha = packet * 0.9 + 0.06;
-
     gl_FragColor = vec4(color, alpha);
   }
 `;
@@ -211,10 +197,8 @@ function VoiceGlobeCore() {
   const globeRef = useRef<THREE.Mesh>(null!);
   const atmosRef = useRef<THREE.Mesh>(null!);
   const groupRef = useRef<THREE.Group>(null!);
-  const arcRefs = useRef<(THREE.Line | null)[]>([]);
 
   useFrame((_state, delta) => {
-    const t = _state.clock.getElapsedTime();
     if (globeRef.current) globeRef.current.rotation.y += delta * 0.08;
     if (atmosRef.current) atmosRef.current.rotation.y -= delta * 0.03;
   });
@@ -234,22 +218,17 @@ function VoiceGlobeCore() {
 
   return (
     <group ref={groupRef}>
-      {/* Main globe */}
-      <mesh ref={globeRef} scale={[1, 1, 1]}>
+      <mesh ref={globeRef}>
         <sphereGeometry args={[GLOBE_RADIUS, 128, 128]} />
         <shaderMaterial
           vertexShader={globeVertShader}
           fragmentShader={globeFragShader}
-          uniforms={{
-            uTime: { value: 0 },
-            uOpacity: { value: 1.0 },
-          }}
+          uniforms={{ uTime: { value: 0 }, uOpacity: { value: 1.0 } }}
           side={THREE.FrontSide}
           transparent
         />
       </mesh>
 
-      {/* Atmosphere glow shell */}
       <mesh ref={atmosRef} scale={[1.15, 1.15, 1.15]}>
         <sphereGeometry args={[GLOBE_RADIUS, 64, 64]} />
         <shaderMaterial
@@ -263,20 +242,16 @@ function VoiceGlobeCore() {
         />
       </mesh>
 
-      {/* City glowing dots */}
       {cityDots.map((pos, i) => (
         <CityDot key={i} position={pos} phase={i * 0.7} delay={i * 0.2} />
       ))}
 
-      {/* Connection arcs */}
       {arcData.map((arc, i) => (
         <ConnectionArc key={i} points={arc.pts} delay={arc.delay} />
       ))}
 
-      {/* Orbital rings */}
       <OrbitalRings />
 
-      {/* Subtle wireframe grid */}
       <mesh>
         <sphereGeometry args={[GLOBE_RADIUS + 0.01, 36, 36]} />
         <meshBasicMaterial color="#4F46E5" wireframe transparent opacity={0.025} />
@@ -285,16 +260,8 @@ function VoiceGlobeCore() {
   );
 }
 
-function CityDot({
-  position,
-  phase,
-  delay,
-}: {
-  position: THREE.Vector3;
-  phase: number;
-  delay: number;
-}) {
-  const ref = useRef<THREE.Mesh>(null!);
+function CityDot({ position, phase, delay }: { position: THREE.Vector3; phase: number; delay: number }) {
+  const ref = useRef<THREE.Group>(null!);
   const dotRef = useRef<THREE.Mesh>(null!);
 
   useFrame((state) => {
@@ -313,12 +280,10 @@ function CityDot({
 
   return (
     <group ref={ref}>
-      {/* Main dot */}
       <mesh ref={dotRef}>
         <sphereGeometry args={[0.04, 16, 16]} />
         <meshBasicMaterial color="#22D3EE" transparent opacity={0.9} />
       </mesh>
-      {/* Glow halo */}
       <mesh>
         <sphereGeometry args={[0.08, 16, 16]} />
         <meshBasicMaterial color="#22D3EE" transparent opacity={0.15} blending={THREE.AdditiveBlending} />
@@ -327,78 +292,60 @@ function CityDot({
   );
 }
 
-function ConnectionArc({
-  points,
-  delay,
-}: {
-  points: THREE.Vector3[];
-  delay: number;
-}) {
-  const lineRef = useRef<THREE.Line>(null!);
-  const glowLineRef = useRef<THREE.Line>(null!);
+function ConnectionArc({ points, delay }: { points: THREE.Vector3[]; delay: number }) {
+  // Build Three.js Line objects imperatively to avoid <line> JSX resolving as SVGLineElement
+  const { lineObj, glowObj } = useMemo(() => {
+    const positions = new Float32Array(points.flatMap((p) => [p.x, p.y, p.z]));
+    const uvs = new Float32Array(points.flatMap((_, i) => [i / (points.length - 1), 0]));
+
+    const makeGeo = () => {
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+      return geo;
+    };
+
+    const makeUniforms = () => ({
+      uTime: { value: 0 },
+      uDelay: { value: delay },
+      uColorStart: { value: new THREE.Color(0x22d3ee) },
+      uColorEnd: { value: new THREE.Color(0x6366f1) },
+    });
+
+    const mat1 = new THREE.ShaderMaterial({
+      vertexShader: arcVertShader,
+      fragmentShader: arcFragShader,
+      uniforms: makeUniforms(),
+      transparent: true,
+      depthWrite: false,
+    });
+
+    const mat2 = new THREE.ShaderMaterial({
+      vertexShader: arcVertShader,
+      fragmentShader: arcFragShader,
+      uniforms: makeUniforms(),
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      opacity: 0.3,
+    });
+
+    return {
+      lineObj: new THREE.Line(makeGeo(), mat1),
+      glowObj: new THREE.Line(makeGeo(), mat2),
+    };
+  }, [points, delay]);
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    if (lineRef.current) {
-      const mat = lineRef.current.material as THREE.ShaderMaterial;
-      if (mat.uniforms?.uTime) mat.uniforms.uTime.value = t;
-    }
-    if (glowLineRef.current) {
-      const mat = glowLineRef.current.material as THREE.ShaderMaterial;
-      if (mat.uniforms?.uTime) mat.uniforms.uTime.value = t;
-    }
+    (lineObj.material as THREE.ShaderMaterial).uniforms.uTime.value = t;
+    (glowObj.material as THREE.ShaderMaterial).uniforms.uTime.value = t;
   });
 
   return (
     <>
-      {/* Glowing arc */}
-      <line ref={lineRef}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={points.length}
-            array={new Float32Array(points.flatMap((p) => [p.x, p.y, p.z]))}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <shaderMaterial
-          vertexShader={arcVertShader}
-          fragmentShader={arcFragShader}
-          uniforms={{
-            uTime: { value: 0 },
-            uDelay: { value: delay },
-            uColorStart: { value: new THREE.Color(0x22d3ee) },
-            uColorEnd: { value: new THREE.Color(0x6366f1) },
-          }}
-          transparent
-          depthWrite={false}
-        />
-      </line>
-      {/* Brighter glow overlay */}
-      <line ref={glowLineRef}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={points.length}
-            array={new Float32Array(points.flatMap((p) => [p.x, p.y, p.z]))}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <shaderMaterial
-          vertexShader={arcVertShader}
-          fragmentShader={arcFragShader}
-          uniforms={{
-            uTime: { value: 0 },
-            uDelay: { value: delay },
-            uColorStart: { value: new THREE.Color(0x22d3ee) },
-            uColorEnd: { value: new THREE.Color(0x6366f1) },
-          }}
-          transparent
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-          opacity={0.3}
-        />
-      </line>
+      <primitive object={lineObj} />
+      <primitive object={glowObj} />
     </>
   );
 }
@@ -432,14 +379,12 @@ export function VoiceGlobeScene() {
 
   useFrame((_, delta) => {
     const t = _.clock.getElapsedTime();
-    // Update shader uniforms
     if (groupRef.current) {
       groupRef.current.traverse((child: any) => {
         if (child.material?.uniforms?.uTime) {
           child.material.uniforms.uTime.value = t;
         }
       });
-      // Mouse parallax tilt
       const tx = mouseRef.current.x * 0.15;
       const ty = -mouseRef.current.y * 0.1;
       groupRef.current.rotation.x += (ty - groupRef.current.rotation.x) * 0.02;
