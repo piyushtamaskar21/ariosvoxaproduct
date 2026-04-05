@@ -150,7 +150,7 @@ export function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen max-h-screen overflow-hidden"
+      className="relative min-h-auto py-20 lg:py-0 lg:min-h-screen overflow-hidden overflow-x-hidden w-full"
       style={{
         background: 'linear-gradient(180deg, #05040B 0%, #0D0820 100%)',
       }}
@@ -264,11 +264,11 @@ export function HeroSection() {
       </motion.div>
 
       {/* Main content grid */}
-      <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 h-screen flex items-center">
-        <div className="w-full flex flex-col-reverse lg:grid lg:grid-cols-[55%_45%] gap-6 lg:gap-0 items-center">
+      <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 flex items-center min-h-auto lg:min-h-screen">
+        <div className="w-full flex flex-col lg:grid lg:grid-cols-[55%_45%] gap-6 sm:gap-8 lg:gap-0 items-center lg:py-0 pt-20 pb-32 lg:pb-20">
 
-          {/* LEFT — Hero copy — now at bottom on mobile (after globe) */}
-          <div className="flex flex-col justify-center space-y-4 sm:z-[10] z-10">
+          {/* LEFT — Hero copy */}
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left justify-center space-y-6 sm:space-y-8 sm:z-[10] z-10 w-full">
             {/* Badge */}
             <motion.div
               initial={{ scale: 0, filter: 'blur(20px)', opacity: 0 }}
@@ -282,7 +282,7 @@ export function HeroSection() {
             </motion.div>
 
             {/* Kinetic Headline */}
-            <div className="pt-1">
+            <div className="pt-1 w-full flex justify-center lg:justify-start">
               <KineticHeadline started />
             </div>
 
@@ -291,13 +291,13 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.5 }}
-              className="text-[#9CA3AF] text-sm sm:text-lg leading-relaxed max-w-full sm:max-w-[480px]"
+              className="text-[#9CA3AF] text-base sm:text-lg leading-relaxed w-full max-w-[480px] px-4 lg:px-0"
             >
               Deploy intelligent voice agents that listen, reason, and act across every timezone, language, and business function — in under 2 minutes.
             </motion.p>
 
             {/* Stat pills */}
-            <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-3 w-full justify-center lg:justify-start max-w-[400px] lg:max-w-none mx-auto lg:mx-0">
               <AnimatedPill value="< 300ms" label="Response Latency" delay={1.0} />
               <AnimatedPill value="99.9%" label="Uptime SLA" delay={1.1} />
               <AnimatedPill value="40+" label="Languages" delay={1.2} />
@@ -308,7 +308,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.4, duration: 0.5 }}
-              className="flex flex-col sm:flex-row gap-3 pt-2"
+              className="flex flex-col sm:flex-row gap-3 pt-2 w-full max-w-[320px] sm:max-w-none mx-auto lg:mx-0"
             >
               <a
                 href="https://ariosai.com/contact"
@@ -338,8 +338,8 @@ export function HeroSection() {
             </motion.div>
           </div>
 
-          {/* RIGHT — 3D Globe — at top on mobile */}
-          <div className="relative h-[280px] sm:h-[400px] lg:h-[650px] w-full max-w-full overflow-hidden" style={{ maxWidth: 'min(100vw, 500px)' }}>
+          {/* RIGHT — 3D Globe */}
+          <div className="hidden md:block relative w-full overflow-hidden md:h-[400px] lg:h-[650px]">
             <Canvas
               camera={{ position: [0, 0, 9], fov: 45 }}
               gl={{ antialias: true, alpha: true }}
@@ -356,7 +356,7 @@ export function HeroSection() {
       </div>
 
       {/* FloatingCards — hide on mobile */}
-      <div className="hidden sm:block">
+      <div className="hidden md:block">
         <FloatingCards />
       </div>
 

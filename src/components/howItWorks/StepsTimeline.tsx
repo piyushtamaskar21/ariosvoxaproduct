@@ -49,8 +49,14 @@ export function StepsTimeline() {
     >
       {/* Parallax background orbs */}
       <motion.div style={{ y: bgY }} className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/4 w-96 h-96 rounded-full" style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)' }} />
-        <div className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(34,211,238,0.06) 0%, transparent 70%)' }} />
+        <div
+          className="absolute top-1/2 left-1/4 w-96 h-96 rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)' }}
+        />
+        <div
+          className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(34,211,238,0.06) 0%, transparent 70%)' }}
+        />
       </motion.div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -80,7 +86,8 @@ export function StepsTimeline() {
         </div>
 
         {/* Step Cards */}
-        <div className="relative flex flex-col gap-6 sm:gap-8">
+        <div className="relative flex flex-col lg:flex-row gap-6 sm:gap-8">
+
           {/* Vertical connecting line (mobile) */}
           <div
             className="lg:hidden absolute left-7 top-0 bottom-0 w-px"
@@ -120,7 +127,7 @@ export function StepsTimeline() {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.3 + i * 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={{ y: -6 }}
-                className="flex-1 lg:group"
+                className="flex-1 group"
               >
                 <div
                   className="relative h-full rounded-2xl p-5 sm:p-6 md:p-8 border transition-all duration-500"
@@ -130,31 +137,22 @@ export function StepsTimeline() {
                     backdropFilter: 'blur(12px)',
                   }}
                 >
-                  <div className="absolute inset-0 opacity-0 lg:group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
+                  {/* Hover inner glow */}
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
                     style={{ boxShadow: `inset 0 0 40px ${step.color}08` }}
                   />
-                  <div className="absolute bottom-0 left-6 right-6 h-px rounded-full opacity-0 lg:group-hover:opacity-100 transition-opacity duration-500"
+                  {/* Hover bottom accent */}
+                  <div
+                    className="absolute bottom-0 left-6 right-6 h-px rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                     style={{ background: `linear-gradient(to right, transparent, ${step.color}, transparent)` }}
                   />
+
                   {/* Icon badge */}
-                  <div
-                    className="relative flex items-center gap-4 mb-5"
+                  <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-500"
+                    style={{ background: `${step.color}18`, border: `1px solid ${step.color}30` }}
                   >
-                    <div
-                      className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-500"
-                      style={{ background: `${step.color}18`, border: `1px solid ${step.color}30` }}
-                    >
-                      <Icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: step.color }} />
-                    </div>
-                    <span
-                      className="hidden sm:block absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
-                      style={{ background: step.color, color: '#000' }}
-                    >
-                      {i + 1}
-                    </span>
-                    {/* Mobile number */}
-                    <div className="lg:hidden flex items-center gap-3">
-                      <div className="flex-1">
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: step.color }} />
                     <span
                       className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
                       style={{ background: step.color, color: '#000' }}
@@ -163,22 +161,14 @@ export function StepsTimeline() {
                     </span>
                   </div>
 
-                  <div className="text-[10px] font-mono tracking-widest uppercase mb-2" style={{ color: step.color }}>
+                  <div
+                    className="text-[10px] font-mono tracking-widest uppercase mb-2"
+                    style={{ color: step.color }}
+                  >
                     {step.label}
                   </div>
                   <h3 className="text-xl font-bold text-white mb-3 font-sora">{step.title}</h3>
                   <p className="text-gray-400 text-sm leading-relaxed">{step.desc}</p>
-
-                  {/* Hover bottom accent */}
-                  <div
-                    className="absolute bottom-0 left-8 right-8 h-px rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{ background: `linear-gradient(to right, transparent, ${step.color}, transparent)` }}
-                  />
-                  {/* Hover inner glow */}
-                  <div
-                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                    style={{ boxShadow: `inset 0 0 40px ${step.color}08` }}
-                  />
                 </div>
               </motion.div>
             );
