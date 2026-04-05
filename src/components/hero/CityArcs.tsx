@@ -45,7 +45,6 @@ function createArcCurve(start: THREE.Vector3, end: THREE.Vector3, height = 0.6):
   const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
   const midLen = mid.length();
   mid.normalize().multiplyScalar(midLen + height);
-  // Use quadratic bezier via a CubicBezierCurve3 with doubled control point
   const c1 = new THREE.Vector3().lerpVectors(start, mid, 0.5);
   const c2 = new THREE.Vector3().lerpVectors(mid, end, 0.5);
   return new THREE.CubicBezierCurve3(start, c1, c2, end);
@@ -60,10 +59,9 @@ function CityArcMeshes({ groupRef }: { groupRef: React.RefObject<THREE.Group> })
       const end = latLngToVec3(CITIES[b].lat, CITIES[b].lng, GLOBE_RADIUS);
       const curve = createArcCurve(start, end, 0.8);
       const points = curve.getPoints(80);
-      const tubeGeo = new THREE.TubeGeometry(
-        new THREE.CubicBezierCurve3(start, start.clone(), end.clone(), end).getPoints(2),
-        1, 0.003, 4, false
-      );
+      // Fix: pass the Curve itself to TubeGeometry, not getPoints() result
+      const tubeCurve = new THREE.CubicBezierCurve3(start, start.clone(), end.clone(), end);
+      const tubeGeo = new THREE.TubeGeometry(tubeCurve, 20, 0.003, 4, false);
       return { start, end, curve, points, tubeGeo };
     });
   }, []);
@@ -97,7 +95,6 @@ function CityArcMeshes({ groupRef }: { groupRef: React.RefObject<THREE.Group> })
         mat.dashOffset = -t * 0.3;
         mat.needsUpdate = true;
       }
-      // Staggered appearance
       const fadeIn = Math.max(0, Math.min(1, (t - i * 0.3) / 1.5));
       mat.opacity = fadeIn * 0.6;
     });
