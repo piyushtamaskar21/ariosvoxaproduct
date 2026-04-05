@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useMemo } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 const CITIES: { name: string; lat: number; lng: number }[] = [
@@ -49,31 +49,28 @@ function createArcCurve(start: THREE.Vector3, end: THREE.Vector3, height = 0.6):
 }
 
 function CityArcMeshes({ groupRef }: { groupRef: React.RefObject<THREE.Group> }) {
-  const { scene } = useThree();
-
-  const arcData = useMemo(() => {
+  // Build Three.js Line objects imperatively to avoid <line> JSX/SVGLineElement conflict
+  const lineObjects = useMemo(() => {
     return CONNECTIONS.map(([a, b]) => {
       const start = latLngToVec3(CITIES[a].lat, CITIES[a].lng, GLOBE_RADIUS);
       const end = latLngToVec3(CITIES[b].lat, CITIES[b].lng, GLOBE_RADIUS);
       const curve = createArcCurve(start, end, 0.8);
-      const points = curve.getPoints(80);
-      const tubeCurve = new THREE.CubicBezierCurve3(start, start.clone(), end.clone(), end);
-      const tubeGeo = new THREE.TubeGeometry(tubeCurve, 20, 0.003, 4, false);
-      return { start, end, curve, points, tubeGeo };
+      const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(128));
+      const mat = new THREE.LineDashedMaterial({
+        color: '#22D3EE',
+        dashSize: 0.15,
+        gapSize: 0.1,
+        linewidth: 1,
+        transparent: true,
+        opacity: 0,
+      });
+      const lineObj = new THREE.Line(geo, mat);
+      lineObj.computeLineDistances();
+      return lineObj;
     });
   }, []);
 
-  const arcLineRefs = useRef<THREE.Line[]>([]);
   const dotRefs = useRef<THREE.Mesh[]>([]);
-
-  const lineGeometries = useMemo(() => {
-    return CONNECTIONS.map(([a, b]) => {
-      const start = latLngToVec3(CITIES[a].lat, CITIES[a].lng, GLOBE_RADIUS);
-      const end = latLngToVec3(CITIES[b].lat, CITIES[b].lng, GLOBE_RADIUS);
-      const curve = createArcCurve(start, end, 0.8);
-      return new THREE.BufferGeometry().setFromPoints(curve.getPoints(128));
-    });
-  }, []);
 
   const cityDots = useMemo(() => {
     return CITIES.map((city) => latLngToVec3(city.lat, city.lng, GLOBE_RADIUS + 0.02));
@@ -82,15 +79,10 @@ function CityArcMeshes({ groupRef }: { groupRef: React.RefObject<THREE.Group> })
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
 
-    arcLineRefs.current.forEach((line, i) => {
-      if (!line) return;
-      // Cast to any to access dashOffset which exists at runtime but
-      // is missing from older @types/three LineDashedMaterial typings
-      const mat = line.material as THREE.LineDashedMaterial & { dashOffset: number };
-      if (mat) {
-        mat.dashOffset = -t * 0.3;
-        mat.needsUpdate = true;
-      }
+    lineObjects.forEach((lineObj, i) => {
+      const mat = lineObj.material as THREE.LineDashedMaterial & { dashOffset: number };
+      mat.dashOffset = -t * 0.3;
+      mat.needsUpdate = true;
       const fadeIn = Math.max(0, Math.min(1, (t - i * 0.3) / 1.5));
       mat.opacity = fadeIn * 0.6;
     });
@@ -99,28 +91,25 @@ function CityArcMeshes({ groupRef }: { groupRef: React.RefObject<THREE.Group> })
       if (!dot) return;
       const pulse = 1 + Math.sin(t * 2 + i * 0.8) * 0.3;
       dot.scale.setScalar(pulse);
-      (dot.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.5 + Math.sin(t * 2 + i) * 0.3;
+      (dot.material as THREE.MeshStandardMaterial).emissiveIntensity =
+        0.5 + Math.sin(t * 2 + i) * 0.3;
     });
   });
 
   return (
     <group ref={groupRef}>
-      {lineGeometries.map((geo, i) => (
-        <line key={`arc-${i}`} ref={(el) => { arcLineRefs.current[i] = el!; }}>
-          <primitive object={geo} />
-          <lineDashedMaterial
-            color="#22D3EE"
-            dashSize={0.15}
-            gapSize={0.1}
-            linewidth={1}
-            transparent
-            opacity={0}
-          />
-        </line>
+      {/* Render arc lines as primitives — avoids SVGLineElement TS conflict */}
+      {lineObjects.map((lineObj, i) => (
+        <primitive key={`arc-${i}`} object={lineObj} />
       ))}
 
+      {/* City glow dots */}
       {cityDots.map((pos, i) => (
-        <mesh key={`dot-${i}`} ref={(el) => { dotRefs.current[i] = el!; }} position={pos}>
+        <mesh
+          key={`dot-${i}`}
+          ref={(el) => { dotRefs.current[i] = el!; }}
+          position={pos}
+        >
           <sphereGeometry args={[0.035, 16, 16]} />
           <meshStandardMaterial
             color="#22D3EE"
