@@ -50,7 +50,7 @@ function ProblemCard({ problem, index }: { problem: typeof problems[0]; index: n
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ delay: index * 0.1, duration: 0.5 }}
       whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(99,102,241,0.08)' }}
-      className="group bg-[#111827]/60 border border-white/[0.06] rounded-2xl p-6 transition-all duration-300 hover:border-indigo-500/20 hover:bg-[#1A2235]/40"
+      className="group bg-[#111827]/60 border border-white/[0.06] rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:border-indigo-500/20 hover:bg-[#1A2235]/40"
     >
       <div className="w-10 h-10 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center mb-4 group-hover:bg-indigo-600/20 transition-colors">
         <Icon className="w-5 h-5 text-indigo-400" />
@@ -63,17 +63,17 @@ function ProblemCard({ problem, index }: { problem: typeof problems[0]; index: n
 
 export function ProblemGrid() {
   return (
-    <section className="py-20 lg:py-28 bg-[#0A0C14]">
+    <section className="py-12 sm:py-20 lg:py-28 bg-[#0A0C14]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 font-sora">
+        <div className="text-center mb-8 sm:mb-14">
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 font-sora">
             Your Human Workforce Has Limits.
             <br />
             <span className="text-gray-500">Your AI One Shouldn{'\u0027'}t.</span>
           </h2>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {problems.map((p, i) => (
             <ProblemCard key={p.title} problem={p} index={i} />
           ))}

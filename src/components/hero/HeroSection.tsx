@@ -30,15 +30,10 @@ function AnimatedPill({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5, ease: 'easeOut' }}
-      whileHover={{
-        y: -2,
-        borderColor: 'rgba(99,102,241,0.5)',
-        backgroundColor: 'rgba(99,102,241,0.05)',
-      }}
-      className="bg-white/[0.03] border border-white/[0.08] rounded-xl px-5 py-3 cursor-default transition-all duration-200"
+      className="bg-white/[0.03] border border-white/[0.08] rounded-xl px-3 py-2 sm:px-5 sm:py-3 cursor-default transition-all duration-200"
     >
-      <div className="font-bold text-white text-base tabular-nums">{value}</div>
-      <div className="text-[11px] text-gray-500 mt-0.5">{label}</div>
+      <div className="font-bold text-white text-sm sm:text-base tabular-nums">{value}</div>
+      <div className="text-[10px] sm:text-[11px] text-gray-500 mt-0.5">{label}</div>
     </motion.div>
   );
 }
@@ -78,10 +73,10 @@ function ScrollProgressBar() {
           opacity: 0.5,
         }}
       />
-      {/* Percentage pill — fades in after 5% */}
+      {/* Percentage pill — hides on mobile */}
       {pct > 5 && (
         <motion.div
-          className="fixed top-3 right-4 z-50 text-[10px] font-mono tracking-wider text-indigo-300/80"
+          className="hidden sm:block fixed top-3 right-4 z-50 text-[10px] font-mono tracking-wider text-indigo-300/80"
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
@@ -93,20 +88,17 @@ function ScrollProgressBar() {
   );
 }
 
-/* ── Cinematic scroll cue — replaces the old "scroll to explore" ─── */
+/* ── Cinematic scroll cue ──────────────────────────────── */
 function ScrollCue() {
   return (
     <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0 z-10">
-      {/* Thin animated line that elongates */}
       <motion.div
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
         transition={{ delay: 2.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className="relative w-px h-10 overflow-visible"
       >
-        {/* Static base line */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-500/60 to-transparent" />
-        {/* Animated dot traveling down the line */}
         <motion.div
           className="absolute left-1/2 w-1.5 h-1.5 -ml-[2px] rounded-full bg-indigo-400"
           initial={{ top: 0, opacity: 0 }}
@@ -121,7 +113,6 @@ function ScrollCue() {
             times: [0, 0.3, 1],
           }}
         />
-        {/* Glow tail */}
         <motion.div
           className="absolute left-1/2 w-0.5 -ml-[0.4px] rounded-full"
           initial={{ top: 0, height: 0, opacity: 0 }}
@@ -141,7 +132,6 @@ function ScrollCue() {
           }}
         />
       </motion.div>
-      {/* Label with slow fade */}
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: [0, 0.6, 0.3] }}
@@ -160,18 +150,15 @@ export function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen overflow-hidden"
+      className="relative min-h-screen max-h-screen overflow-hidden"
       style={{
         background: 'linear-gradient(180deg, #05040B 0%, #0D0820 100%)',
       }}
     >
-      {/* ── Scroll Progress Bar (top-level, outside grid) ─── */}
       <ScrollProgressBar />
 
-      {/* Noise grain overlay */}
       <NoiseGrain />
 
-      {/* Bloom blobs */}
       <div
         className="absolute top-[-10%] right-[5%] w-[700px] h-[700px] rounded-full pointer-events-none"
         style={{
@@ -194,18 +181,16 @@ export function HeroSection() {
         }}
       />
 
-      {/* Star field */}
       <StarFieldCanvas />
 
-      {/* ── Arios Voxa Logo — top-left, subtle ───────────────────────── */}
+      {/* ── Arios Voxa Logo ───────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.5 }}
-        className="absolute top-6 left-6 lg:top-8 lg:left-12 z-20"
+        className="absolute top-4 left-4 sm:top-6 sm:left-6 lg:top-8 lg:left-12 z-20"
       >
-        <div className="flex items-center gap-2.5 group cursor-default">
-          {/* Logo mark with subtle breath glow */}
+        <div className="flex items-center gap-2 group cursor-default">
           <motion.div
             className="relative"
             whileHover={{ filter: 'brightness(1.2)' }}
@@ -218,11 +203,11 @@ export function HeroSection() {
               }}
             />
             <svg
-              width="28"
-              height="28"
+              width="24"
+              height="24"
               viewBox="0 0 32 32"
               fill="none"
-              className="relative"
+              className="relative sm:hidden"
             >
               <path
                 d="M16 4L4 28h5l7-16 7 16h5L16 4z"
@@ -241,34 +226,63 @@ export function HeroSection() {
                 </linearGradient>
               </defs>
             </svg>
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 32 32"
+              fill="none"
+              className="relative hidden sm:block"
+            >
+              <path
+                d="M16 4L4 28h5l7-16 7 16h5L16 4z"
+                fill="url(#logoGradHero2)"
+              />
+              <defs>
+                <linearGradient
+                  id="logoGradHero2"
+                  x1="4"
+                  y1="4"
+                  x2="28"
+                  y2="28"
+                >
+                  <stop stopColor="#6366F1" />
+                  <stop offset="1" stopColor="#22D3EE" />
+                </linearGradient>
+              </defs>
+            </svg>
           </motion.div>
-          <span className="text-sm font-semibold text-white/80 tracking-wide select-none font-sora">
+          {/* Full logo text on md+ */}
+          <span className="hidden sm:block text-sm font-semibold text-white/80 tracking-wide select-none font-sora">
             Arios Voxa{' '}
             <span className="text-indigo-400/60 font-normal">Studio</span>
+          </span>
+          {/* Compact "AV" logo on small screens */}
+          <span className="sm:hidden text-sm font-semibold text-white/80 tracking-wide select-none font-sora">
+            Arios Voxa
           </span>
         </div>
       </motion.div>
 
       {/* Main content grid */}
-      <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12 h-screen flex items-center">
-        <div className="w-full grid lg:grid-cols-[55%_45%] gap-8 lg:gap-0 items-center">
+      <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 h-screen flex items-center">
+        <div className="w-full flex flex-col-reverse lg:grid lg:grid-cols-[55%_45%] gap-6 lg:gap-0 items-center">
 
-          {/* LEFT — Hero copy */}
-          <div className="flex flex-col justify-center space-y-8 z-[10]">
+          {/* LEFT — Hero copy — now at bottom on mobile (after globe) */}
+          <div className="flex flex-col justify-center space-y-4 sm:z-[10] z-10">
             {/* Badge */}
             <motion.div
               initial={{ scale: 0, filter: 'blur(20px)', opacity: 0 }}
               animate={{ scale: 1, filter: 'blur(0px)', opacity: 1 }}
               transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
             >
-              <span className="inline-flex items-center gap-2 border border-indigo-500/40 bg-indigo-500/[0.08] rounded-full px-5 py-2 text-[13px] font-medium text-[#A5B4FC]">
+              <span className="inline-flex items-center gap-2 border border-indigo-500/40 bg-indigo-500/[0.08] rounded-full px-3 py-1.5 sm:px-5 sm:py-2 text-[11px] sm:text-[13px] font-medium text-[#A5B4FC]">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                 Now live in 40+ languages globally
               </span>
             </motion.div>
 
             {/* Kinetic Headline */}
-            <div className="pt-2">
+            <div className="pt-1">
               <KineticHeadline started />
             </div>
 
@@ -277,13 +291,13 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.5 }}
-              className="text-[#9CA3AF] text-base sm:text-lg leading-[1.7] max-w-[480px]"
+              className="text-[#9CA3AF] text-sm sm:text-lg leading-relaxed max-w-full sm:max-w-[480px]"
             >
               Deploy intelligent voice agents that listen, reason, and act across every timezone, language, and business function — in under 2 minutes.
             </motion.p>
 
             {/* Stat pills */}
-            <div className="flex flex-wrap gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-3">
               <AnimatedPill value="< 300ms" label="Response Latency" delay={1.0} />
               <AnimatedPill value="99.9%" label="Uptime SLA" delay={1.1} />
               <AnimatedPill value="40+" label="Languages" delay={1.2} />
@@ -294,17 +308,17 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.4, duration: 0.5 }}
-              className="flex flex-wrap gap-4 pt-2"
+              className="flex flex-col sm:flex-row gap-3 pt-2"
             >
               <a
                 href="https://ariosai.com/contact"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="w-full sm:w-auto"
               >
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="relative px-8 py-4 rounded-xl font-semibold text-white text-[15px] overflow-hidden"
+                  className="relative w-full sm:w-auto px-8 py-3 sm:py-4 rounded-xl font-semibold text-white text-sm sm:text-[15px] overflow-hidden min-h-[44px]"
                   style={{
                     background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
                     boxShadow: '0 0 40px rgba(99,102,241,0.3)',
@@ -314,19 +328,22 @@ export function HeroSection() {
                 </motion.button>
               </a>
 
-              <button className="flex items-center gap-2 px-6 py-4 rounded-xl font-medium text-white text-[15px] border border-white/[0.12] bg-white/[0.05] hover:bg-white/[0.08] transition-colors">
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 sm:py-4 rounded-xl font-medium text-white text-sm sm:text-[15px] border border-white/[0.12] bg-white/[0.05] min-h-[44px]"
+              >
                 <Play className="w-4 h-4" />
                 Watch Live Demo
-              </button>
+              </motion.button>
             </motion.div>
           </div>
 
-          {/* RIGHT — 3D Globe */}
-          <div className="relative h-[500px] lg:h-[650px]">
+          {/* RIGHT — 3D Globe — at top on mobile */}
+          <div className="relative h-[280px] sm:h-[400px] lg:h-[650px] w-full max-w-full overflow-hidden" style={{ maxWidth: 'min(100vw, 500px)' }}>
             <Canvas
               camera={{ position: [0, 0, 9], fov: 45 }}
               gl={{ antialias: true, alpha: true }}
-              dpr={[1, 2]}
+              dpr={[1, 1.5]}
               className="absolute inset-0 w-full h-full"
               style={{ background: 'transparent' }}
             >
@@ -334,14 +351,15 @@ export function HeroSection() {
               <pointLight position={[10, 10, 10]} intensity={0.5} />
               <VoiceGlobeScene />
             </Canvas>
-
-            {/* HTML overlay on top of WebGL canvas */}
-            <FloatingCards />
           </div>
         </div>
       </div>
 
-      {/* ── Cinematic scroll cue ──────────────────────────────── */}
+      {/* FloatingCards — hide on mobile */}
+      <div className="hidden sm:block">
+        <FloatingCards />
+      </div>
+
       <ScrollCue />
     </section>
   );

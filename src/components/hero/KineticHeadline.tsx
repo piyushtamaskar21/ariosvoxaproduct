@@ -38,7 +38,7 @@ function StaggeredLine({
 export function KineticHeadline({ started }: { started?: boolean }) {
   return (
     <div className="space-y-1">
-      <h1 className="text-[48px] sm:text-[56px] lg:text-[72px] xl:text-[80px] font-extrabold leading-[1.05] tracking-tight">
+      <h1 className="text-[32px] sm:text-[48px] md:text-[56px] lg:text-[72px] xl:text-[80px] font-extrabold leading-[1.1] sm:leading-[1.05] tracking-tight">
         <div>
           <StaggeredLine text="Your AI Voice" delayOffset={started ? 0.3 : 10} />
         </div>

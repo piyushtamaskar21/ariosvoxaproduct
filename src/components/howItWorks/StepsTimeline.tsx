@@ -44,7 +44,7 @@ export function StepsTimeline() {
   return (
     <section
       ref={ref}
-      className="relative py-24 lg:py-36 overflow-hidden"
+      className="relative py-16 sm:py-24 lg:py-36 overflow-hidden"
       style={{ background: 'linear-gradient(180deg, #0A0C14 0%, #0D0820 50%, #0A0C14 100%)' }}
     >
       {/* Parallax background orbs */}
@@ -56,12 +56,12 @@ export function StepsTimeline() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
 
         {/* Header */}
-        <div className="text-center mb-20">
+        <div className="text-center mb-12 sm:mb-16 md:mb-20 px-2">
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="text-xs font-mono tracking-widest uppercase text-indigo-400 mb-4"
+            className="text-xs font-mono tracking-widest uppercase text-indigo-400 mb-3 sm:mb-4"
           >
             Deployment Playbook
           </motion.p>
@@ -69,7 +69,7 @@ export function StepsTimeline() {
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white font-sora leading-tight"
+            className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white font-sora leading-tight"
           >
             From Zero to Global Voice Workforce
             <br />
@@ -80,9 +80,21 @@ export function StepsTimeline() {
         </div>
 
         {/* Step Cards */}
-        <div className="relative flex flex-col lg:flex-row gap-6 lg:gap-8">
+        <div className="relative flex flex-col gap-6 sm:gap-8">
+          {/* Vertical connecting line (mobile) */}
+          <div
+            className="lg:hidden absolute left-7 top-0 bottom-0 w-px"
+            style={{ background: 'rgba(255,255,255,0.05)' }}
+          >
+            <motion.div
+              initial={{ scaleY: 0 }}
+              animate={isInView ? { scaleY: 1 } : {}}
+              transition={{ duration: 1.6, delay: 0.6, ease: 'easeInOut' }}
+              className="w-full h-full bg-gradient-to-b from-indigo-500 via-violet-500 to-cyan-400 origin-top"
+            />
+          </div>
 
-          {/* Animated connecting line */}
+          {/* Animated connecting line (desktop) */}
           <div
             className="hidden lg:block absolute top-16 h-px"
             style={{
@@ -108,22 +120,41 @@ export function StepsTimeline() {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.3 + i * 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={{ y: -6 }}
-                className="flex-1 group"
+                className="flex-1 lg:group"
               >
                 <div
-                  className="relative h-full rounded-2xl p-8 border transition-all duration-500"
+                  className="relative h-full rounded-2xl p-5 sm:p-6 md:p-8 border transition-all duration-500"
                   style={{
                     background: 'rgba(17,24,39,0.6)',
                     borderColor: 'rgba(255,255,255,0.06)',
                     backdropFilter: 'blur(12px)',
                   }}
                 >
+                  <div className="absolute inset-0 opacity-0 lg:group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
+                    style={{ boxShadow: `inset 0 0 40px ${step.color}08` }}
+                  />
+                  <div className="absolute bottom-0 left-6 right-6 h-px rounded-full opacity-0 lg:group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ background: `linear-gradient(to right, transparent, ${step.color}, transparent)` }}
+                  />
                   {/* Icon badge */}
                   <div
-                    className="relative w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500"
-                    style={{ background: `${step.color}18`, border: `1px solid ${step.color}30` }}
+                    className="relative flex items-center gap-4 mb-5"
                   >
-                    <Icon className="w-6 h-6" style={{ color: step.color }} />
+                    <div
+                      className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-500"
+                      style={{ background: `${step.color}18`, border: `1px solid ${step.color}30` }}
+                    >
+                      <Icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: step.color }} />
+                    </div>
+                    <span
+                      className="hidden sm:block absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+                      style={{ background: step.color, color: '#000' }}
+                    >
+                      {i + 1}
+                    </span>
+                    {/* Mobile number */}
+                    <div className="lg:hidden flex items-center gap-3">
+                      <div className="flex-1">
                     <span
                       className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
                       style={{ background: step.color, color: '#000' }}

@@ -32,7 +32,7 @@ export function FinalCTA() {
 
               {/* CTAs */}
               <div className="flex flex-wrap justify-center gap-4 mb-16">
-                <a href="https://ariosai.com/contact" target="_blank" rel="noopener noreferrer">
+                <a href="https://ariosai.com/contact" target="https://ariosai.com/contact" rel="noopener noreferrer">
                   <button className="group inline-flex items-center gap-2 bg-white text-indigo-950 font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-white/10 hover:-translate-y-0.5">
                     Talk to Sales
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -92,24 +92,24 @@ export function FinalCTA() {
               <span className="text-gray-500 text-sm">ARIOS VOXA STUDIO</span>
             </a>
 
-            {/* Links */}
+            {/* Links
             <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
               {['Product', 'Pricing', 'Docs', 'Blog', 'Security', 'Careers'].map((link) => (
                 <a key={link} href="#" className="hover:text-gray-300 transition-colors">
                   {link}
                 </a>
               ))}
-            </div>
+            </div> */}
 
             {/* Flags + Copyright */}
-            <div className="flex flex-col items-center gap-3">
+            {/* <div className="flex flex-col items-center gap-3">
               <div className="text-lg tracking-widest" aria-label="Serving regions globally">
                 🇺🇸 🇧 🇪 🇳 🇬 🇧🇷
               </div>
               <div className="text-xs text-gray-600">
                 © 2026 Arios AI. All rights reserved.
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </footer>

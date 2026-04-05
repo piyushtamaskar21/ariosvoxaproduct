@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/hero/HeroSection";
 import { LiveProofTicker } from "@/components/ticker/LiveProofTicker";
+import { ProductShowcaseScroll } from "@/components/ui/container-scroll-demo";
 import { ProblemGrid } from "@/components/problem/ProblemGrid";
 import { ClientPage } from "./client-page";
 
@@ -9,6 +10,7 @@ export default function Home() {
       <HeroSection />
       <LiveProofTicker />
       <ProblemGrid />
+      <ProductShowcaseScroll />
       <ClientPage />
     </>
   );
