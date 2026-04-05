@@ -32,13 +32,12 @@ export function FinalCTA() {
 
               {/* CTAs */}
               <div className="flex flex-wrap justify-center gap-4 mb-16">
-                <button className="group inline-flex items-center gap-2 bg-white text-indigo-950 font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-white/10 hover:-translate-y-0.5">
-                  Start Free — 30 Days
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-                <button className="inline-flex items-center gap-2 border border-white/20 text-white font-medium px-6 py-4 rounded-xl hover:bg-white/10 transition-all">
-                  Talk to Sales
-                </button>
+                <a href="https://ariosai.com/contact" target="_blank" rel="noopener noreferrer">
+                  <button className="group inline-flex items-center gap-2 bg-white text-indigo-950 font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-white/10 hover:-translate-y-0.5">
+                    Talk to Sales
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </a>
               </div>
 
               {/* Tiers */}
@@ -105,7 +104,7 @@ export function FinalCTA() {
             {/* Flags + Copyright */}
             <div className="flex flex-col items-center gap-3">
               <div className="text-lg tracking-widest" aria-label="Serving regions globally">
-                🇺🇸 🇧 🇦🇪 🇮🇳 🇬 🇧🇷
+                🇺🇸 🇧 🇪 🇳 🇬 🇧🇷
               </div>
               <div className="text-xs text-gray-600">
                 © 2026 Arios AI. All rights reserved.
