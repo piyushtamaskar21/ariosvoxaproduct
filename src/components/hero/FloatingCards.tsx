@@ -37,9 +37,9 @@ export function FloatingCards() {
         </div>
       </motion.div>
 
-      {/* Card 2: Mumbai */}
+      {/* Card 2: Mumbai — positioned at vertical mid of hero, left side */}
       <motion.div
-        className={`absolute top-[12%] left-[2%] ${cardStyle} w-[160px]`}
+        className={`absolute top-[42%] left-[2%] ${cardStyle} w-[160px]`}
         animate={{ y: [0, -12, 0] }}
         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
       >
