@@ -4,7 +4,6 @@ import { useRef, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-// City positions on a sphere of radius ~2.8
 const CITIES: { name: string; lat: number; lng: number }[] = [
   { name: 'New York', lat: 40.7, lng: -74 },
   { name: 'London', lat: 51.5, lng: -0.1 },
@@ -17,16 +16,15 @@ const CITIES: { name: string; lat: number; lng: number }[] = [
   { name: 'Sydney', lat: -33.9, lng: 151.2 },
 ];
 
-// City pair connections
 const CONNECTIONS = [
-  [0, 1], // New York ↔ London
-  [1, 2], // London ↔ Dubai
-  [2, 3], // Dubai ↔ Mumbai
-  [3, 4], // Mumbai ↔ Singapore
-  [4, 5], // Singapore ↔ Tokyo
-  [5, 6], // Tokyo ↔ São Paulo
-  [6, 0], // São Paulo ↔ New York
-  [7, 8], // Amsterdam ↔ Sydney
+  [0, 1],
+  [1, 2],
+  [2, 3],
+  [3, 4],
+  [4, 5],
+  [5, 6],
+  [6, 0],
+  [7, 8],
 ];
 
 const GLOBE_RADIUS = 2.8;
@@ -59,7 +57,6 @@ function CityArcMeshes({ groupRef }: { groupRef: React.RefObject<THREE.Group> })
       const end = latLngToVec3(CITIES[b].lat, CITIES[b].lng, GLOBE_RADIUS);
       const curve = createArcCurve(start, end, 0.8);
       const points = curve.getPoints(80);
-      // Fix: pass the Curve itself to TubeGeometry, not getPoints() result
       const tubeCurve = new THREE.CubicBezierCurve3(start, start.clone(), end.clone(), end);
       const tubeGeo = new THREE.TubeGeometry(tubeCurve, 20, 0.003, 4, false);
       return { start, end, curve, points, tubeGeo };
@@ -69,7 +66,6 @@ function CityArcMeshes({ groupRef }: { groupRef: React.RefObject<THREE.Group> })
   const arcLineRefs = useRef<THREE.Line[]>([]);
   const dotRefs = useRef<THREE.Mesh[]>([]);
 
-  // Create line arcs
   const lineGeometries = useMemo(() => {
     return CONNECTIONS.map(([a, b]) => {
       const start = latLngToVec3(CITIES[a].lat, CITIES[a].lng, GLOBE_RADIUS);
@@ -79,7 +75,6 @@ function CityArcMeshes({ groupRef }: { groupRef: React.RefObject<THREE.Group> })
     });
   }, []);
 
-  // City glow dots
   const cityDots = useMemo(() => {
     return CITIES.map((city) => latLngToVec3(city.lat, city.lng, GLOBE_RADIUS + 0.02));
   }, []);
@@ -87,10 +82,11 @@ function CityArcMeshes({ groupRef }: { groupRef: React.RefObject<THREE.Group> })
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
 
-    // Animate dashed lines
     arcLineRefs.current.forEach((line, i) => {
       if (!line) return;
-      const mat = line.material as THREE.LineDashedMaterial;
+      // Cast to any to access dashOffset which exists at runtime but
+      // is missing from older @types/three LineDashedMaterial typings
+      const mat = line.material as THREE.LineDashedMaterial & { dashOffset: number };
       if (mat) {
         mat.dashOffset = -t * 0.3;
         mat.needsUpdate = true;
@@ -99,7 +95,6 @@ function CityArcMeshes({ groupRef }: { groupRef: React.RefObject<THREE.Group> })
       mat.opacity = fadeIn * 0.6;
     });
 
-    // Pulse city dots
     dotRefs.current.forEach((dot, i) => {
       if (!dot) return;
       const pulse = 1 + Math.sin(t * 2 + i * 0.8) * 0.3;
@@ -110,7 +105,6 @@ function CityArcMeshes({ groupRef }: { groupRef: React.RefObject<THREE.Group> })
 
   return (
     <group ref={groupRef}>
-      {/* Connection arcs - dashed lines */}
       {lineGeometries.map((geo, i) => (
         <line key={`arc-${i}`} ref={(el) => { arcLineRefs.current[i] = el!; }}>
           <primitive object={geo} />
@@ -125,7 +119,6 @@ function CityArcMeshes({ groupRef }: { groupRef: React.RefObject<THREE.Group> })
         </line>
       ))}
 
-      {/* City dots */}
       {cityDots.map((pos, i) => (
         <mesh key={`dot-${i}`} ref={(el) => { dotRefs.current[i] = el!; }} position={pos}>
           <sphereGeometry args={[0.035, 16, 16]} />
