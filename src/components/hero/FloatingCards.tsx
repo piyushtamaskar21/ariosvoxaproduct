@@ -39,7 +39,7 @@ export function FloatingCards() {
 
       {/* Card 2: Mumbai */}
       <motion.div
-        className={`absolute top-[45%] left-[-2%] ${cardStyle} w-[160px]`}
+        className={`absolute top-[12%] left-[2%] ${cardStyle} w-[160px]`}
         animate={{ y: [0, -12, 0] }}
         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
       >
